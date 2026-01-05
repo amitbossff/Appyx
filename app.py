@@ -46,7 +46,7 @@ def get_reviews():
             lang="en",
             country="in",
             sort=Sort.NEWEST,
-            count=3000
+            count=15000
         )
 
         users = []
@@ -94,7 +94,7 @@ def reviews_pdf():
         lang="en",
         country="in",
         sort=Sort.NEWEST,
-        count=3000
+        count=15000
     )
 
     names = []
