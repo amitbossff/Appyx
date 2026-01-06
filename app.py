@@ -10,7 +10,7 @@ app = Flask(__name__)
 # ---------- HOME ----------
 @app.route("/")
 def home():
-    return send_file("index.html")
+    return send_file("pdf1.html")
 
 
 # ---------- REVIEWS API ----------
