@@ -1,0 +1,95 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<title>Play Store Reviews</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+
+<body class="bg-gray-100 min-h-screen flex justify-center p-4">
+
+<div class="w-full max-w-md bg-white border rounded p-4">
+
+<h2 class="text-lg font-semibold text-center mb-3">Play Store Reviews</h2>
+
+<input id="link" class="w-full border p-2 mb-2" placeholder="App ID / Link">
+<input id="date" type="date" class="w-full border p-2 mb-2">
+
+<button onclick="startLoad()" class="w-full bg-blue-600 text-white py-2 rounded">
+Get Reviews
+</button>
+
+<div id="output" class="mt-3 text-sm max-h-[420px] overflow-y-auto border p-2"></div>
+
+<button id="loadMore" onclick="loadPrevious()" 
+class="hidden w-full mt-3 bg-gray-700 text-white py-2 rounded">
+Load Previous Day
+</button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+let appLink = "";
+let currentDate = null;
+
+function toast(msg, color="#2563eb") {
+  Toastify({
+    text: msg,
+    duration: 2500,
+    gravity: "top",
+    position: "center",
+    style: { background: color }
+  }).showToast();
+}
+
+function startLoad() {
+  appLink = document.getElementById("link").value;
+  const dateVal = document.getElementById("date").value;
+
+  if (!appLink || !dateVal) {
+    toast("Link & Date required", "#dc2626");
+    return;
+  }
+
+  currentDate = new Date(dateVal);
+  document.getElementById("output").innerHTML = "";
+  loadDate(currentDate);
+}
+
+function loadDate(dateObj) {
+  const out = document.getElementById("output");
+  const dateStr = dateObj.toISOString().split("T")[0];
+
+  toast(`Loading ${dateStr}`);
+
+  fetch(`/reviews?link=${encodeURIComponent(appLink)}&date=${dateStr}`)
+    .then(r => r.json())
+    .then(res => {
+
+      out.innerHTML += `
+        <div class="font-semibold bg-gray-200 px-2 py-1 mt-2">
+          ${dateStr} (${res.count})
+        </div>`;
+
+      if (!res.data.length) {
+        out.innerHTML += `<div class="text-gray-400 px-2">No reviews</div>`;
+      }
+
+      res.data.forEach(r => {
+        out.innerHTML += `<div class="border-b px-2 py-1">${r.user}</div>`;
+      });
+
+      document.getElementById("loadMore").classList.remove("hidden");
+    });
+}
+
+function loadPrevious() {
+  currentDate.setDate(currentDate.getDate() - 1);
+  loadDate(currentDate);
+}
+</script>
+
+</body>
+</html>
